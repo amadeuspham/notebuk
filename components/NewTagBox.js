@@ -89,32 +89,32 @@ export default class NewTagBox extends React.Component {
 
 const styles = StyleSheet.create({
 	container: {
+		//flex: 1,
 		justifyContent: 'center',
 		padding: 20,
 		backgroundColor: 'white',
-		width: Dimensions.get('window').width - 50,
-		height: 450,
 	},
 	title: {
 		fontSize: 16,
+		fontFamily: 'AvenirNext-Regular',
 	},
 	tagInputContainer: {
 		marginBottom: 20,
 	},
 	tagNameInput: {
-		height: 50,
-		width: Dimensions.get('window').width - 100,
 		borderBottomColor: 'lightgrey',
     borderBottomWidth: StyleSheet.hairlineWidth,
     fontSize: 16,
+    fontFamily: 'AvenirNext-Regular',
+    marginTop: 10,
 	},
 	buttonRow: {
 		flexDirection: 'row',
 		justifyContent: 'space-between',
-		//backgroundColor: 'green',
 	},
 	textButton: {
 		fontSize: 16,
-		color: '#097DFF',
+		color: '#568EA6',
+		fontFamily: 'AvenirNext-DemiBold',
 	},
 });

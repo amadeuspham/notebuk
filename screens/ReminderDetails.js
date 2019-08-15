@@ -39,7 +39,7 @@ export default class ReminderDetails extends React.Component {
 	      	<Ionicons 
 						name='ios-arrow-back' 
 						size={30} 
-						style={{ marginLeft: 20, color: '#097DFF' }}
+						style={{ marginLeft: 20, color: '#363636' }}
 					/>
 	      </TouchableOpacity>
 	    ),
@@ -124,7 +124,7 @@ export default class ReminderDetails extends React.Component {
 		const now = new Date();
 
 		// Schedule a local notification in the future, remove the previously scheduled on if exists
-		if (dueDate) {
+		if (settingDueDate) {
 			dueDateString = dueDate.toISOString();
 			// only send notifications if the due date's not passed
 			if (dueDate.getTime() > now.getTime()){
@@ -199,7 +199,7 @@ export default class ReminderDetails extends React.Component {
 						style={styles.toggleButton}
 						onPress={() => this.toggleReminderStatus(id, content, time, done, settingDueDate, dueDate, tagName, notiID)}
 					>
-						<Text style={{fontSize: 14, color: 'dodgerblue', fontWeight: 'bold'}}>{toggleText}</Text>
+						<Text style={styles.toggleText}>{toggleText}</Text>
 					</TouchableOpacity>
 				}
 			</KeyboardAvoidingView>
@@ -209,10 +209,9 @@ export default class ReminderDetails extends React.Component {
 
 const styles = StyleSheet.create({
 	container: {
-		//flex: 1,
+		flex: 1,
+		backgroundColor: '#EFEEEE',
 		paddingHorizontal: 15,
-		//marginRight: 10,
-		//justifyContent: 'space-between',
 	},
 	contentBar: {
 		flexDirection: 'row', 
@@ -224,10 +223,14 @@ const styles = StyleSheet.create({
 	},
 	textTitle: {
 		fontSize: 16,
+		color: '#363636',
+		fontFamily: 'AvenirNext-DemiBold',
 	},
 	textInput: {
 		textAlignVertical: 'top',
 		fontSize: 16,
+		fontFamily: 'AvenirNext-Regular',
+		color: '#363636',
 		flex: 1,
 		paddingHorizontal: 10,
 		borderBottomColor: 'gainsboro',
@@ -237,5 +240,11 @@ const styles = StyleSheet.create({
 		alignSelf: 'flex-end',
 		justifyContent: 'center',
 		marginTop: 20,
+	},
+	toggleText: {
+		fontSize: 14, 
+		fontFamily: 'AvenirNext-DemiBold',
+		color: '#568EA6', 
+		fontWeight: 'bold'
 	},
 });

@@ -1,6 +1,7 @@
 import React from 'react';
-import { UIManager, Platform, Alert } from 'react-native';
+import { UIManager, Platform, Alert, ActivityIndicator, View, Text } from 'react-native';
 import { Notifications } from 'expo';
+import * as Font from 'expo-font';
 
 import AppContainer from './route';
 import Notifs from './utils/Notifs';
@@ -10,17 +11,23 @@ export default class App extends React.Component {
 	state = {
 		token: null,
 		notification: null,
+		allFontsLoaded: false,
 	};
 
-	componentDidMount(){
+	async componentDidMount(){
 		Notifs.registerForPushNotificationsAsync();
-
-    // Handle notifications that are received or selected while the app
-    // is open. If the app was closed and then opened by tapping the
-    // notification (rather than just tapping the app icon to open it),
-    // this function will fire on the next tick after the app starts
-    // with the notification data.
     Notifications.addListener(this._handleNotification);
+
+    await Font.loadAsync({
+      'AvenirNext-Bold': require('./assets/fonts/AvenirNext-Bold.ttf'),
+      'AvenirNext-DemiBold': require('./assets/fonts/AvenirNext-DemiBold.ttf'),
+      'AvenirNext-Heavy': require('./assets/fonts/AvenirNext-Heavy.ttf'),
+      'AvenirNext-Medium': require('./assets/fonts/AvenirNext-Medium.ttf'),
+      'AvenirNext-Regular': require('./assets/fonts/AvenirNext-Regular.ttf'),
+      'AvenirNext-UltraLight': require('./assets/fonts/AvenirNext-UltraLight.ttf'),
+    });
+
+    this.setState({allFontsLoaded: true});
 	}
 
 	_handleNotification = notification => {
@@ -30,7 +37,7 @@ export default class App extends React.Component {
   }
 
 	render() {
-		const {notification} = this.state;
+		const {notification, allFontsLoaded} = this.state;
 
 		if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental){ 
 			UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -38,8 +45,17 @@ export default class App extends React.Component {
 
 		if (notification) console.log(JSON.stringify(this.state.notification.data.message));
 
-	  return (
-	    <AppContainer/>
-	  );
+		if (allFontsLoaded) {
+			return (
+		    <AppContainer/>
+		  );
+		} else {
+			return (
+				<View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+					<ActivityIndicator size='large' color='#568EA6' size='large'/>
+					<Text style={{color: 'grey', marginTop: 10}}>Loading resources</Text>
+				</View>
+			);
+		}
 	}
 }

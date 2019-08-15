@@ -18,8 +18,9 @@ export default class NoteList extends React.PureComponent {
 	keyExtractor = (item, index) => item.id;
 
 	renderItem = (note) => {
-		const {openNote, updateNotes, allTags} = this.props;
+		const {openNote, allTags, onDeleteRequest} = this.props;
 		const {tagName} = note.item;
+		console.log(allTags);
 		const tagColor = allTags && tagName ? allTags.filter(tag => tag.name === tagName)[0].color : null;
 		//console.log(tagColor);
 		return(
@@ -28,7 +29,7 @@ export default class NoteList extends React.PureComponent {
 				note={note.item}
 				tagColor={tagColor}
 				openNote={openNote}
-				updateNotes={updateNotes}
+				onDeleteRequest={onDeleteRequest}
 			/>
 		);
 	};
@@ -51,5 +52,6 @@ export default class NoteList extends React.PureComponent {
 const styles = StyleSheet.create({
 	noteList: {
 		flex: 1,
+		paddingHorizontal: 20,
 	},
 });

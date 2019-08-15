@@ -69,7 +69,7 @@ export default class TagCard extends React.PureComponent {
 			>
 				<View style={styles.tagCard}>
 					{color && <View style={[styles.tagDot, {backgroundColor: color}]}/>}
-					<Text style={{fontSize: 16}}>{name}</Text>
+					<Text style={{fontSize: 16, fontFamily: 'AvenirNext-Regular'}}>{name}</Text>
 				</View>
 			</TouchableOpacity>
 		);

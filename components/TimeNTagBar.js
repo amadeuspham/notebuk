@@ -32,7 +32,8 @@ const styles = StyleSheet.create({
 		marginTop: 10,
 	},
 	timeText: {
-		fontSize: 12,
+		fontSize: 14,
 		color: 'grey',
+		fontFamily: 'AvenirNext-Regular',
 	},
 });

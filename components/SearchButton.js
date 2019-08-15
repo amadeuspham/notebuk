@@ -1,6 +1,5 @@
 import React from 'react';
-import {View, TouchableOpacity} from 'react-native';
-import SearchBar from 'react-native-searchbar';
+import {View, TouchableOpacity, StyleSheet} from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 
 export default class SearchButton extends React.Component {
@@ -12,11 +11,12 @@ export default class SearchButton extends React.Component {
 			<View>
 				<TouchableOpacity
 					onPress={openSearchBar}
+					style={styles.container}
 				>
 					<MaterialIcons 
 						name='search' 
 						size={26} 
-						style={{ color: 'dodgerblue' }}
+						style={{ color: '#305F72' }}
 					/>
 				</TouchableOpacity>
 				
@@ -24,3 +24,13 @@ export default class SearchButton extends React.Component {
 		);
 	}
 }
+
+const styles = StyleSheet.create({
+	container: {
+		//height: 20,
+		elevation: 7,
+		padding: 15,
+		borderRadius: 30,
+		backgroundColor: 'white',
+	},
+});

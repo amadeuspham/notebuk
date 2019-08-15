@@ -39,8 +39,8 @@ export default class ReminderCard extends React.Component {
 	}
 
 	render() {
-		const {allTags, reminder, reminder: {content, done, dueDateString, tagName}, openReminder} = this.props;
-		//console.log(tagName);
+		const {allTags, reminder, reminder: {content, done, settingDueDate, dueDateString, tagName}, openReminder} = this.props;
+		
 		const tagColor = allTags && tagName ? allTags.filter(tag => tag.name === tagName)[0].color : 'grey';
 		const lightness = lightOrDark(tagColor);
 		const contentColor = lightness == 'light' ? 'black' : 'white';
@@ -54,25 +54,28 @@ export default class ReminderCard extends React.Component {
 		const doneText = {
 			textDecorationLine: 'line-through',
 			color: tagColor,
+			fontFamily: 'AvenirNext-Regular',
+
 		};
 		const notDoneText = {
 			color: contentColor,
+			fontFamily: 'AvenirNext-Regular',
 		};
 
 		const dateNTime = getDateStrings(dueDateString);
-		const dueDate = new Date(dueDateString);
+		const dueDate = dueDateString ? new Date(dueDateString) : new Date();
 		const now = new Date();
 
 		const FinishBar = (
 			<View style={[styles.extraBar,{
-				backgroundColor: 'lightcyan', 
+				backgroundColor: '#c9ffe3', 
 				alignItems: 'flex-end',
 				paddingRight: 10,
 			}]}>
 				<Ionicons 
 					name='ios-checkmark' 
 					size={25} 
-					color='dodgerblue'
+					color='green'
 				/>
 			</View>
 		);
@@ -105,7 +108,7 @@ export default class ReminderCard extends React.Component {
 					onPress={() => openReminder(reminder, dueDate)}
 				>
 					<View style={{flexDirection: 'row'}}>
-						{dueDate.getTime() <= now.getTime() && dueDate.getTime() !== 0 && !done &&
+						{settingDueDate && dueDate.getTime() <= now.getTime() && !done &&
 							<MaterialIcons 
 								name='assignment-late' 
 								size={20} 
@@ -134,12 +137,12 @@ const styles = StyleSheet.create({
 		width: Dimensions.get('window').width - 20,
 		marginTop: 10,
 		alignItems: 'center',
+		borderRadius: 15,
 	},
 	cardContent: {
 		flexDirection: 'row',
 		justifyContent: 'space-between',
-		paddingHorizontal: 5,
-		//alignItems: 'center',
+		paddingHorizontal: 10,
 	},
 	extraBar: {
 		flex: 1,

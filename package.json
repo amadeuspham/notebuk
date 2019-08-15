@@ -21,6 +21,11 @@
     "react-navigation": "^3.11.1",
     "uuid": "^3.3.2"
   },
+  "rnpm": {
+    "assets": [
+      "./assets/fonts/"
+    ]
+  },
   "devDependencies": {
     "babel-preset-expo": "^5.1.1"
   },

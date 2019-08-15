@@ -1,101 +1,68 @@
 import React from 'react';
 import {View, Text, StyleSheet, Dimensions, TouchableOpacity, Alert} from 'react-native';
-import Swipeable from 'react-native-swipeable-row';
-import { Ionicons } from '@expo/vector-icons';
 
 import getDateStrings from '../utils/TimeManipulator';
 import {deleteData} from '../utils/DataManager';
-import store from '../store';
 
 export default class NoteCard extends React.PureComponent {
 
 	card = null;
-
-	onDeleteRequest = async (title) => {
-		Alert.alert(
-		  'Delete note?',
-		  'Are you sure you want to delete ' + title + '?',
-		  [
-		    {text: 'Yes, delete', onPress: this.deleteNote},
-		    {
-		      text: 'Cancel',
-		      style: 'cancel',
-		    },
-		  ],
-		  {cancelable: false},
-		);
-	}
-
-	deleteNote = async () => {
-		const {note: {id}, updateNotes} = this.props;
-		await deleteData(id, 'allNotes');
-		updateNotes();
-	}
 
 	handleUserSwipeList() {
 		 this.card.recenter();
 	}
 
 	render() {
-		const {openNote, note, tagColor, note: {title, content, time}} = this.props;
-
-		var snippet = content ? content.substring(0, 125) : '';
-		if (snippet.length >= 125) snippet += "...";
-
+		const {openNote, note, tagColor, onDeleteRequest, note: {id, title, content, time}} = this.props;
 		const {dateStr} = getDateStrings(time);
 
-		const rightButtons = [
-			<TouchableOpacity 
-				style={[styles.cardButton, {backgroundColor: 'red'}]}
-				onPress={() => this.onDeleteRequest(title)}
-			>
-				<Ionicons 
-					name='md-trash' 
-					size={30} 
-					style={{ color: 'white' }}
-				/>
-			</TouchableOpacity>
-		];
-
 		return (
-			<Swipeable 
-				onRef={ref => this.card = ref} 
+			<TouchableOpacity
 				style={styles.card} 
-				rightButtons={rightButtons}
-				//onSwipeComplete={}
+				onPress={() => openNote(note, this.onDeleteRequest)}
+				onLongPress={() => onDeleteRequest(title, id)}
 			>
-				<TouchableOpacity
-					onPress={() => openNote(note)}
-					onLongPress={() => this.onDeleteRequest(title)}
-				>
-					<View style={styles.cardText}>
-						<View style={styles.noteHeader}>
-							<View style={{flexDirection: 'row', alignItems: 'center'}}>
-								{tagColor && <View style={[styles.tagDot, {backgroundColor: tagColor}]}/>}
-								<Text style={styles.titleText}>{title}</Text>
-							</View>
-							<Text style={{fontSize: 14}}>{dateStr}</Text>
+				<View style={styles.cardText}>
+					<View style={styles.noteHeader}>
+						<View style={{flexDirection: 'row', alignItems: 'center'}}>
+							{tagColor && <View style={[styles.tagDot, {backgroundColor: tagColor}]}/>}
+							<Text style={styles.titleText}>{title}</Text>
 						</View>
-						<Text style={styles.snippet}>{snippet}</Text>
+						<Text style={styles.timeText}>{dateStr}</Text>
 					</View>
-				</TouchableOpacity>
-			</Swipeable>
+					<Text 
+						style={styles.snippet}
+						numberOfLines={2}
+						ellipsizeMode='tail'
+					>
+						{content}
+					</Text>
+				</View>
+			</TouchableOpacity>
 		);
 	}
 }
 
 const styles = StyleSheet.create({
 	card: {
+		zIndex: 1,
 		height: 80,
-		width: Dimensions.get('window').width,
-		borderBottomColor: 'gainsboro',
-    borderBottomWidth: 0.5,
+		width: Dimensions.get('window').width - 40,
+		borderColor: 'gainsboro',
+    borderWidth: StyleSheet.hairlineWidth,
+    marginTop: 20,
+    backgroundColor: 'white',
+    shadowOffset: {width: 10,height: 10},
+    shadowOpacity: 0.1,
+    elevation: 5,
+    //overflow: 'visible',
+    //elevation: 8,
 	},
 	cardButton: {
 		height: 80,
 		width: 80,
-		borderBottomColor: 'gainsboro',
-    borderBottomWidth: StyleSheet.hairlineWidth,
+		borderColor: 'gainsboro',
+    borderWidth: StyleSheet.hairlineWidth,
     alignItems: 'center',
     justifyContent: 'center',
 	},
@@ -117,9 +84,15 @@ const styles = StyleSheet.create({
 	titleText: {
 		fontSize: 16,
 		color: 'black',
+		fontFamily: 'AvenirNext-DemiBold',
+	},
+	timeText: {
+		fontSize: 14,
+		fontFamily: 'AvenirNext-Regular',
 	},
 	snippet: {
 		fontSize: 12,
+		fontFamily: 'AvenirNext-Regular',
 		color: 'grey',
 	},
 });

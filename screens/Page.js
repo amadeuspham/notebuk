@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, StyleSheet, TextInput, Dimensions, Text, KeyboardAvoidingView, TouchableOpacity} from 'react-native';
+import {StyleSheet, TextInput, Dimensions, KeyboardAvoidingView, TouchableOpacity} from 'react-native';
 import uuidv4 from 'uuid/v4';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -9,17 +9,18 @@ import store from '../store';
 
 export default class Page extends React.Component {
 	static navigationOptions = ({navigation, navigation: {state: {params}}}) => {
-		const {data} = params;
+		const {data, onDeleteRequest, changingTitle} = params;
 
-		//if (data === null) return {
-		//	title: 'New note',
-		//};
-
-		//const {title} = data;
+		var noteTitle = 'New note';
+		if (changingTitle) {
+			noteTitle = changingTitle;
+		} else if (data) {
+			noteTitle = data.title;
+		}
 
 		return {
-			title: data ? data.title : 'New note',
-			 headerLeft: (
+			title: noteTitle,
+			headerLeft: (
 	      <TouchableOpacity 
 	      	onPress={() => {
 	      		const saveNote = navigation.getParam('saveNote');
@@ -30,7 +31,24 @@ export default class Page extends React.Component {
 	      	<Ionicons 
 						name='ios-arrow-back' 
 						size={30} 
-						style={{ marginLeft: 20, color: '#097DFF' }}
+						style={{ marginLeft: 20, color: '#363636' }}
+					/>
+	      </TouchableOpacity>
+	    ),
+			headerRight: (
+	      <TouchableOpacity 
+	      	onPress={() => {
+	      		onDeleteRequest(
+	      			data ? data.title : 'this note', 
+	      			navigation.getParam('id'), 
+	      			navigation
+	      		);
+	      	}}
+	      >
+	      	<Ionicons 
+						name='md-trash' 
+						size={30} 
+						style={{ marginRight: 20, color: '#363636' }}
 					/>
 	      </TouchableOpacity>
 	    ),
@@ -67,7 +85,11 @@ export default class Page extends React.Component {
 			}
 		);
 
-		if (data === null) return;
+		if (data === null) {
+			navigation.setParams({ 'id': this.state.id });
+			return;
+		} 
+
 		const {id, title, content, time, tagName} = data;
 
 		this.setState({
@@ -76,7 +98,7 @@ export default class Page extends React.Component {
 			content,
 			time,
 			tagName,
-		});
+		}, () => navigation.setParams({ 'id': id }));
 	};
 
 	componentWillUnmount(){
@@ -90,18 +112,20 @@ export default class Page extends React.Component {
 	}
 
 	handleChangeText = (text, fromField) => {
+		const { navigation: { navigate } } = this.props;
 		var {typingTimeout} = this.state;
 
 		if (typingTimeout) {
-       clearTimeout(typingTimeout);
+      clearTimeout(typingTimeout);
     }
 
 		if (fromField == 'title') {
 			this.setState({
 				title: text,
-				//typing: false,
 				typingTimeout: setTimeout(this.saveNote, 2000),
-			});
+			}, () => navigate('Page', {
+			changingTitle: text,
+			}));
 		} else {
 			this.setState({
 				content: text,
@@ -127,7 +151,7 @@ export default class Page extends React.Component {
 		return (
 			<KeyboardAvoidingView style={styles.container} behavior='height'>
 				<TextInput
-					style={styles.textInput}
+					style={[styles.textInput, {fontFamily: 'AvenirNext-DemiBold',}]}
 					placeholder={'Title'}
 					value={title}
 					onChangeText={(title) => this.handleChangeText(title, 'title')}
@@ -154,6 +178,7 @@ export default class Page extends React.Component {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
+		backgroundColor: '#EFEEEE',
 		justifyContent: 'center',
 		alignItems: 'center',
 	},
@@ -166,7 +191,7 @@ const styles = StyleSheet.create({
 		marginTop: 10,
 		borderBottomColor: 'gainsboro',
     borderBottomWidth: StyleSheet.hairlineWidth,
-    //backgroundColor: 'lightgrey'
+    fontFamily: 'AvenirNext-Regular',
 	},
 	headerButtonText: {
 		marginLeft: 15,

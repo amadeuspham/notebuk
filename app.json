@@ -10,18 +10,23 @@
       "android",
       "web"
     ],
-    "version": "1.0.0",
+    "version": "1.1.0",
+    "primaryColor": "#F1D1B5",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#EFEEEE"
     },
     "notification": {
       "icon": "./assets/icon.png",
-      "color": "#ffffff",
+      "color": "#EFEEEE",
       "androidMode": "default"
+    },
+    "androidStatusBar": {
+    	"barStyle": "dark-content",
+    	backgroundColor: "#F1D1B5"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -30,7 +35,11 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
-    }
+      "supportsTablet": true,
+      "bundleIdentifier": "com.amadeuspham.notebuk",
+    },
+    "android": {
+      "package": "com.amadeuspham.notebuk"
+    },
   }
 }

@@ -31,7 +31,7 @@ export default class TagButton extends React.Component{
 						size={12} 
 						style={{ color: contentColor, marginRight: 5 }}
 					/>
-					<Text style={{fontSize: 12, color: contentColor}}>
+					<Text style={[styles.tagText, {color: contentColor}]}>
 						{tagName ? tagName : 'No tag'}
 					</Text>
 				</TouchableOpacity>
@@ -58,5 +58,9 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 		alignItems: 'center',
+	},
+	tagText: {
+		fontSize: 14, 
+		fontFamily: 'AvenirNext-Regular',
 	},
 });

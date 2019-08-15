@@ -22,13 +22,12 @@ export default class TagList extends React.Component {
 	state =  {
 		currentRoute: store.getState().currentRoute,
 		allTags: store.getState().allTags,
-		//allNotes: store.getState().notes,
-		//allReminders: store.getState().reminders,
 		searching: store.getState().searching,
 		creatingNew: false,
 		editMode: false,
 		editingTagName: null,
 		editingTagColor: null,
+		allFontsLoaded: store.getState().allFontsLoaded,
 	};
 
 	async componentDidMount(){
@@ -137,7 +136,7 @@ export default class TagList extends React.Component {
 		store.setState({allTags: allTagsUpdated});
 	}
 
-	changeAllNotesOfTag = (oldName, oldColor, newName, newColor) => {
+	changeAllNotesOfTag = async (oldName, oldColor, newName, newColor) => {
 		const {allTags} = this.state;
 		const allNotes = store.getState().notes;
 		const	allReminders = store.getState().reminders;
@@ -159,6 +158,10 @@ export default class TagList extends React.Component {
 		all_reminders.forEach((reminder) => {
 			if (reminder.tagName === oldName) reminder.tagName = newName;
 		});
+
+		await saveData('allTags', all_tags);
+		await saveData('allNotes', all_notes);
+		await saveData('allReminders', all_reminders);
 
 		store.setState({notes: all_notes, allTags: all_tags, reminders: all_reminders});
 	}
@@ -203,7 +206,14 @@ export default class TagList extends React.Component {
 
 	render(){
 		const {choosing, onClose} = this.props;
-		const {searching} = this.state;
+		const {searching, allFontsLoaded, currentRoute} = this.state;
+		//console.log(currentRoute);
+		var dataType = null;
+		if (currentRoute === 'Book' || currentRoute === 'Notebuk') {
+			dataType = 'notes';
+		} else if (currentRoute === 'Reminders') {
+			dataType = 'reminders';
+		}
 
 		if (searching) return (
 			<SafeAreaView 
@@ -231,13 +241,17 @@ export default class TagList extends React.Component {
 			<SafeAreaView style={[styles.container, creatingNew ? {backgroundColor: 'rgba(0,0,0,0.5)'} : '']}>
 				{choosing &&
 					<View>
-						<AntDesign 
+						<AntDesign x
 							name='close' 
 							size={20} 
 							style={{marginLeft: 10 }}
 							onPress={onClose}
 						/>
-						<Text style={{fontSize: 20, alignSelf: 'center'}}>Choose a tag for your note</Text>
+						<Text 
+							style={{fontSize: 20, alignSelf: 'center', fontFamily: 'AvenirNext-Medium'}}
+						>
+							Choose a tag for your note
+						</Text>
 					</View>
 				}
 				<FlatList
@@ -247,14 +261,14 @@ export default class TagList extends React.Component {
 					renderItem={this.renderItem}
 				/>
 				{ !choosing &&
-				<TouchableOpacity onPress={() => this.filterTag('All notes')}>
+				<TouchableOpacity onPress={() => this.filterTag('All')}>
 					<View style={styles.tagCard}>
 						<AntDesign 
 							name='tags' 
 							size={25} 
 							style={{ color: 'black', marginRight: 10 }}
 						/>
-						<Text style={{fontSize: 16}}>All notes</Text>
+						<Text style={{fontSize: 16, fontFamily: 'AvenirNext-Regular'}}>{'All ' + dataType}</Text>
 					</View>
 				</TouchableOpacity>
 				}
@@ -265,13 +279,12 @@ export default class TagList extends React.Component {
 							size={25} 
 							style={{ color: 'black', marginRight: 10 }}
 						/>
-						<Text style={{fontSize: 16}}>New tag</Text>
+						<Text style={{fontSize: 16, fontFamily: 'AvenirNext-Regular'}}>New tag</Text>
 					</View>
 				</TouchableOpacity>
 				<Modal 
 					visible={creatingNew} 
 					animationType='slide' 
-					transparent={true}
 				>
 					<SafeAreaView>
 						<KeyboardAvoidingView 
@@ -298,12 +311,10 @@ export default class TagList extends React.Component {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		backgroundColor: 'white',
-		marginBottom: 20,
+		backgroundColor: '#EFEEEE',
 	},
 	tagList: {
 		flex: 1,
-		//backgroundColor: 'red',
 	},
 	tagCard: {
 		height: 50,

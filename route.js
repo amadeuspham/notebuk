@@ -1,5 +1,4 @@
 import React from 'react';
-
 import { createAppContainer, createStackNavigator, createDrawerNavigator, createBottomTabNavigator } from 'react-navigation';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
@@ -31,7 +30,17 @@ const RemindersStack = createStackNavigator(
 		mode: 'modal',
 		initialRouteName: 'ReminderWindow',
 		navigationOptions: { 
-			tabBarIcon: getTabBarIcon('reminder')
+			tabBarIcon: getTabBarIcon('reminder'),
+		},
+		defaultNavigationOptions: {
+			headerStyle: {
+				backgroundColor: '#F1D1B5',
+			},
+			headerTitleStyle: {
+	      fontFamily: 'AvenirNext-Regular',
+	      fontWeight: "400",
+	    },
+			headerTintColor: '#363636',
 		},
 	},
 );
@@ -48,7 +57,18 @@ const BookStack = createStackNavigator(
 	{
 		initialRouteName: 'Book',
 		navigationOptions: { 
-			tabBarIcon: getTabBarIcon('notebook')
+			tabBarIcon: getTabBarIcon('notebook'),
+		},
+		defaultNavigationOptions: {
+			headerStyle: {
+				backgroundColor: '#F1D1B5',
+				//height: 40,
+			},
+			headerTitleStyle: {
+	      fontFamily: 'AvenirNext-Regular',
+	      fontWeight: "400",
+	    },
+			headerTintColor: '#363636',
 		},
 	},
 );
@@ -71,6 +91,18 @@ const TabNavigator = createBottomTabNavigator(
         defaultHandler();
       },
     }),
+    tabBarOptions: {
+    	activeTintColor: '#363636',
+    	inactiveTintColor: '#8c8c8c',
+    	inactiveBackgroundColor: '#F1D1B5',
+    	style: {
+    		backgroundColor: '#F1D1B5',
+    	},
+    	labelStyle: {
+    		fontFamily: 'AvenirNext-DemiBold',
+    	},
+    	keyboardHidesTabBar: true,
+    },
 	},
 );
 

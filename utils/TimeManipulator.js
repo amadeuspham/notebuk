@@ -4,8 +4,6 @@ export default getDateStrings = time => {
 	var dateObjNow = new Date();
 	var dateObj = new Date(time);
 
-	if (dateObj.getTime() === 0) return;
-
 	const today = dateObj.getDate() == dateObjNow.getDate() && dateObj.getMonth() == dateObjNow.getMonth() && dateObj.getFullYear() == dateObjNow.getFullYear();
 	const tommorow = dateObj.getDate() == dateObjNow.getDate() + 1 && dateObj.getMonth() == dateObjNow.getMonth() && dateObj.getFullYear() == dateObjNow.getFullYear();
 	
@@ -16,7 +14,7 @@ export default getDateStrings = time => {
 	if (today) {
 		dateStr = 'Today';
 	} else if (tommorow) {
-		dateStr = 'Tommorow';
+		dateStr = 'Tomorrow';
 	} else {
 		dateStr = dateObj.getDate() + '/' + realMonth + '/' + yearStr.slice(2);
 	}

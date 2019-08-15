@@ -1,35 +1,43 @@
 import React from 'react';
-import {View, StyleSheet, TouchableOpacity, StatusBar, Dimensions, Text, ActivityIndicator} from 'react-native';
+import {View, StyleSheet, TouchableOpacity, StatusBar, Dimensions, Text, ActivityIndicator, Alert} from 'react-native';
 import SearchBar from 'react-native-searchbar';
 
 import { AntDesign } from '@expo/vector-icons';
 import store from '../store';
 import SearchButton from '../components/SearchButton';
 import NoteList from '../components/NoteList';
-import {fetchData, saveData} from '../utils/DataManager';
+import {fetchData, deleteData} from '../utils/DataManager';
 
 export default class Book extends React.Component {
-	static navigationOptions = ({navigation, navigation: { navigate } }) => ({
-		title: 'Notebuk',
-		headerLeft: (
-			<TouchableOpacity onPress={navigation.toggleDrawer}>
-				<AntDesign 
-					name='tag' 
-					size={25} 
-					style={{ color: 'black', marginLeft: 15 }}
-				/>
-			</TouchableOpacity>
-		),
-		headerRight: (
-			<TouchableOpacity onPress={navigation.getParam('newNote')}>
-				<AntDesign 
-					name='plus' 
-					size={25} 
-					style={{ color: 'black', marginRight: 15 }}
-				/>
-			</TouchableOpacity>
-		),
-	});
+	static navigationOptions = ({navigation, navigation: {state: {params}} }) => {
+		//console.log(navigation);
+		const currentTag = params ? params.tagName : 'All notes';
+
+		return ({
+			title: 'Notebuk ',
+			headerLeft: (
+				<TouchableOpacity onPress={navigation.toggleDrawer}>
+					<View style={styles.tagSection}>
+						<AntDesign 
+							name='tag' 
+							size={25} 
+							style={{ color: '#363636', marginLeft: 15, marginRight: 10 }}
+						/>
+						<Text style={styles.tagText}>{currentTag}</Text>
+					</View>
+				</TouchableOpacity>
+			),
+			headerRight: (
+				<TouchableOpacity onPress={navigation.getParam('newNote')}>
+					<AntDesign 
+						name='plus' 
+						size={25} 
+						style={{ color: '#363636', marginRight: 15 }}
+					/>
+				</TouchableOpacity>
+			),
+		})
+	};
 // when notes are filtered, saving a note will delete notes that don't belong
 	state = {
 		data: null,
@@ -61,7 +69,7 @@ export default class Book extends React.Component {
 	async componentDidUpdate(prevProps, prevState){
 		const {navigation, navigation: {state: {params}}} = this.props;
 		const {data} = this.state;
-		const tagName = params.tagName == 'All notes' ? null : params.tagName;
+		const tagName = params.tagName == 'All' ? null : params.tagName;
 
 		if (tagName !== this.state.tagName) {
 	    this.setState({tagName});
@@ -101,16 +109,17 @@ export default class Book extends React.Component {
 
 	handleSearchBarHidden = () => {
 		this.searchBar = null;
-		this.setState({searchResults: null}, store.setState({searching: false}));
+		this.setState({searchResults: []}, store.setState({searching: false}));
 	}
 
-	openNote = noteData => {
+	openNote = (noteData) => {
 		const { navigation: { navigate } } = this.props;
 		const {data, allTags} = this.state;
 		navigate('Page', {
 			data: noteData, 
 			allTags: allTags,
-			updateNotes: () => this.updateNotes()
+			updateNotes: () => this.updateNotes(),
+			onDeleteRequest: this.onDeleteRequest,
 		});
 	}
 
@@ -120,8 +129,31 @@ export default class Book extends React.Component {
 		navigate('Page', {
 			data: null,  
 			allTags: allTags,
-			updateNotes: () => this.updateNotes()
+			updateNotes: () => this.updateNotes(),
+			onDeleteRequest: this.onDeleteRequest,
 		});
+	}
+
+	onDeleteRequest = async (title, id, navigation) => {
+		const noteTitle = title ? title : 'this untitled note';
+		Alert.alert(
+		  'Delete note?',
+		  'Are you sure you want to delete ' + noteTitle + '?',
+		  [
+		    {text: 'Yes, delete', onPress: () => this.deleteNote(id, navigation)},
+		    {
+		      text: 'Cancel',
+		      style: 'cancel',
+		    },
+		  ],
+		  {cancelable: false},
+		);
+	}
+
+	deleteNote = async (id, navigation) => {
+		await deleteData(id, 'allNotes');
+		if (navigation) navigation.goBack();
+		this.updateNotes();
 	}
 
 	updateNotes = async() => {
@@ -143,7 +175,7 @@ export default class Book extends React.Component {
 		//console.log(data);
 		return (
 			<View style={styles.container}>
-				<StatusBar barStyle="dark-content" backgroundColor='dodgerblue' translucent={false}/>
+				<StatusBar barStyle="dark-content"/>
 			  <View style={styles.header}>
 			  	{!searching &&
 				  	<SearchButton openSearchBar={this.openSearchBar}/>
@@ -159,19 +191,22 @@ export default class Book extends React.Component {
 					  iOSHideShadow={true}
 					/>
 				</View>
-				<View style={styles.noteList}>
+				<View style={[styles.noteList, searching && {marginTop: 50}]}>
 					{loading &&
-						<ActivityIndicator/>
+						<View style={{justifyContent: 'center', alignItems: 'center'}}>
+							<ActivityIndicator color='#F1D1B5'/>
+							<Text style={styles.noNoteText}>Loading your notes</Text>
+						</View>
 					}
 					{dataDisplaying.length === 0 && !loading && !searching &&
 						<Text style={styles.noNoteText}>You don't have any note. Write some!</Text>
 					}
-					{dataDisplaying &&
+					{dataDisplaying.length !== 0 && !loading &&
 						<NoteList
 							data={dataDisplaying}
 							allTags={allTags}
 							openNote={this.openNote}
-							updateNotes={this.updateNotes}
+							onDeleteRequest={this.onDeleteRequest}
 						/>
 					}
 				</View>
@@ -185,20 +220,36 @@ const styles = StyleSheet.create({
 		flex: 1,
 		justifyContent: 'center',
 		alignItems: 'center',
+		backgroundColor: '#EFEEEE',
+	},
+	tagSection: {
+		flexDirection: 'row',
+		alignItems: 'center',
+	},
+	tagText: {
+		color: '#363636',
+		fontSize: 16,
+		fontFamily: 'AvenirNext-Regular',
 	},
 	header: {
-		height: 40,
+		position: 'absolute',
+		zIndex: 1,
+		backgroundColor: 'transparent',
+		marginTop: 5,
+		top: 0,
 		width: Dimensions.get('window').width,
-		justifyContent: 'center',
 		alignItems: 'center',
-		borderBottomColor: 'gainsboro',
-    borderBottomWidth: StyleSheet.hairlineWidth,
+		shadowOffset: {width: 8,height: 8},
+    shadowOpacity: 0.1,
 	},
 	noNoteText: {
 		color: 'grey',
-		marginTop: 10,
+		fontSize: 16,
+		fontFamily: 'AvenirNext-Regular',
 	},
 	noteList: {
 		flex: 1,
+		alignItems: 'center',
+		justifyContent: 'center',
 	},
 });

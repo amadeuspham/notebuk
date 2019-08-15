@@ -7,27 +7,34 @@ import RemindersList from '../components/RemindersList';
 import {fetchData, storeData, saveData} from '../utils/DataManager';
 
 export default class ReminderWindow extends React.Component {
-	static navigationOptions = ({navigation, navigation: { navigate } }) => ({
-		title: 'Reminders',
-		headerLeft: (
-			<TouchableOpacity onPress={navigation.toggleDrawer}>
-				<AntDesign 
-					name='tag' 
-					size={25} 
-					style={{ color: 'black', marginLeft: 15 }}
-				/>
-			</TouchableOpacity>
-		),
-		headerRight: (
-			<TouchableOpacity onPress={navigation.getParam('newReminder')}>
-				<AntDesign 
-					name='plus' 
-					size={25} 
-					style={{ color: 'black', marginRight: 15 }}
-				/>
-			</TouchableOpacity>
-		),
-	});
+	static navigationOptions = ({navigation, navigation: {state: {params}}}) => {
+		const currentTag = params ? params.tagName : 'All reminders';
+
+		return ({
+			title: 'Reminders',
+			headerLeft: (
+				<TouchableOpacity onPress={navigation.toggleDrawer}>
+					<View style={styles.tagSection}>
+						<AntDesign 
+							name='tag' 
+							size={25} 
+							style={{ color: '#363636', marginLeft: 15, marginRight: 10 }}
+						/>
+						<Text style={styles.tagText}>{currentTag}</Text>
+					</View>
+				</TouchableOpacity>
+			),
+			headerRight: (
+				<TouchableOpacity onPress={navigation.getParam('newReminder')}>
+					<AntDesign 
+						name='plus' 
+						size={25} 
+						style={{ color: '#363636', marginRight: 15 }}
+					/>
+				</TouchableOpacity>
+			),
+		});
+	};
 
 	state = {
 		allReminders: store.getState().reminders,
@@ -52,7 +59,7 @@ export default class ReminderWindow extends React.Component {
 	async componentDidUpdate(prevProps, prevState){
 		const {navigation, navigation: {state: {params}}} = this.props;
 		const {allReminders} = this.state;
-		const tagName = params.tagName == 'All notes' ? null : params.tagName;
+		const tagName = params.tagName == 'All' ? null : params.tagName;
 
 		if (tagName !== this.state.tagName) {
 	    this.setState({tagName});
@@ -111,20 +118,24 @@ export default class ReminderWindow extends React.Component {
 	}
 
 	render(){
-		const {allReminders, filtering, filteredReminders} = this.state;
+		const {allReminders, filtering, filteredReminders, filterDueModalOpen} = this.state;
 
 		return(
 			<View style={styles.container}>
-				<StatusBar barStyle="dark-content" backgroundColor='dodgerblue' translucent={false}/>
+				<StatusBar barStyle="dark-content"/>
 				<View style={styles.remindersList}>
 					{allReminders.length === 0 &&
-						<Text style={styles.noNoteText}>You don't have any reminder. Set some!</Text>
+						<Text style={styles.noReminderText}>You don't have any reminder. Set some!</Text>
 					}
-					<RemindersList
-						reminders={filtering ? filteredReminders : allReminders}
-						openReminder={this.openReminder}
-						updateReminders={this.updateReminders}
-					/>
+					{allReminders.length !== 0 && 
+						<View>
+							<RemindersList
+								reminders={filtering ? filteredReminders : allReminders}
+								openReminder={this.openReminder}
+								updateReminders={this.updateReminders}
+							/>
+						</View>
+					}
 				</View>
 			</View>
 		);
@@ -136,12 +147,31 @@ const styles = StyleSheet.create({
 		flex: 1,
 		justifyContent: 'center',
 		alignItems: 'center',
+		backgroundColor: '#EFEEEE',
 	},
-	noNoteText: {
+	tagSection: {
+		flexDirection: 'row',
+		alignItems: 'center',
+	},
+	tagText: {
+		color: '#363636',
+		fontSize: 16,
+		fontFamily: 'AvenirNext-Regular',
+	},
+	noReminderText: {
+		fontFamily: 'AvenirNext-Regular',
 		color: 'grey',
-		marginTop: 10,
+		fontSize: 16,
 	},
 	remindersList: {
 		flex: 1,
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	filterBoxBackground: {
+		flex: 1,
+		backgroundColor: 'rgba(0,0,0,0.5)', 
+		justifyContent: 'center', 
+		alignItems: 'center',
 	},
 });
