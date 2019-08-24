@@ -44,6 +44,7 @@ export const storeData = async (id, data, key) => {
 };
 
 export const deleteData = async (id, key) => {
+  //console.log('deleting' + id);
   var all = await fetchData(key);
 
   var remaining = null;

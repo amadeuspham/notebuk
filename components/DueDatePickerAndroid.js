@@ -87,7 +87,7 @@ export default class DueDatePickerAndroid extends Component {
             onPress={this.openDatePicker}
             style={styles.timeInput}
           >
-            <Text>{days + '/' + (months+1) + '/' + years}</Text>
+            <Text style={styles.timeText}>{days + '/' + (months+1) + '/' + years}</Text>
           </TouchableOpacity>
         </View>
         <View style={{flexDirection: 'row'}}>
@@ -121,5 +121,6 @@ const styles = StyleSheet.create({
   },
   timeText: {
     fontSize: 14,
-  }
+    fontFamily: 'AvenirNext-Regular',
+  },
 })

@@ -2,7 +2,7 @@ import React from 'react';
 import {View, StyleSheet, TouchableOpacity, StatusBar, Dimensions, Text, ActivityIndicator, Alert} from 'react-native';
 import SearchBar from 'react-native-searchbar';
 
-import { AntDesign } from '@expo/vector-icons';
+import { AntDesign, Ionicons } from '@expo/vector-icons';
 import store from '../store';
 import SearchButton from '../components/SearchButton';
 import NoteList from '../components/NoteList';
@@ -10,24 +10,41 @@ import {fetchData, deleteData} from '../utils/DataManager';
 
 export default class Book extends React.Component {
 	static navigationOptions = ({navigation, navigation: {state: {params}} }) => {
-		//console.log(navigation);
+		let bookTitle =  'Notebuk';
+		let selectingNotes = false;
+
+		if (params && params.notesSelectedNum && params.notesSelectedNum !== 0) {
+			bookTitle = 'Selecting ' + params.notesSelectedNum + ' notes';
+			selectingNotes = true;
+		}
+
 		const currentTag = params ? params.tagName : 'All notes';
 
 		return ({
-			title: 'Notebuk ',
-			headerLeft: (
+			title: bookTitle,
+			headerLeft: !selectingNotes ? (
 				<TouchableOpacity onPress={navigation.toggleDrawer}>
 					<View style={styles.tagSection}>
 						<AntDesign 
 							name='tag' 
 							size={25} 
-							style={{ color: '#363636', marginLeft: 15, marginRight: 10 }}
+							style={{ color: '#363636', marginLeft: 15}}
 						/>
 						<Text style={styles.tagText}>{currentTag}</Text>
 					</View>
 				</TouchableOpacity>
-			),
-			headerRight: (
+			) : (
+	      <TouchableOpacity 
+	      	onPress={navigation.getParam('cancelSelectMode')}
+	      >
+	      	<Ionicons 
+						name='ios-arrow-back' 
+						size={30} 
+						style={{ marginLeft: 20, color: '#363636' }}
+					/>
+	      </TouchableOpacity>
+	    ),
+			headerRight: !selectingNotes ? (
 				<TouchableOpacity onPress={navigation.getParam('newNote')}>
 					<AntDesign 
 						name='plus' 
@@ -35,10 +52,20 @@ export default class Book extends React.Component {
 						style={{ color: '#363636', marginRight: 15 }}
 					/>
 				</TouchableOpacity>
+			) : (
+				<TouchableOpacity
+					onPress={() => navigation.getParam('onDeleteSelectedRequest')(params.notesMap)}
+				>
+					<Ionicons 
+						name='md-trash' 
+						size={25} 
+						style={{ color: '#363636', marginRight: 15 }}
+					/>
+				</TouchableOpacity>
 			),
 		})
 	};
-// when notes are filtered, saving a note will delete notes that don't belong
+
 	state = {
 		data: null,
 		filteredNotes: null,
@@ -64,6 +91,8 @@ export default class Book extends React.Component {
 
 		navigation.setParams({ 'tagName': null });
 		navigation.setParams({ 'newNote': this.newNote });
+		navigation.setParams({'onDeleteSelectedRequest' : this.onDeleteSelectedRequest});
+		navigation.setParams({'cancelSelectMode' : this.cancelSelectMode});
 	}
 
 	async componentDidUpdate(prevProps, prevState){
@@ -161,6 +190,44 @@ export default class Book extends React.Component {
 		store.setState({notes: allNotesUpdated});
 	}
 
+	selectingNotes = (notesSelectedNum, notesMap) => {
+		const { navigation: { navigate } } = this.props;
+		navigate('Book', {notesSelectedNum, notesMap});
+	}
+
+	cancelSelectMode = () => {
+		const { navigation: { navigate } } = this.props;
+		navigate('Book', {notesSelectedNum: 0});
+		store.setState({selectNotesMode: false});
+	}
+
+	onDeleteSelectedRequest = async (notesMap) => {
+		Alert.alert(
+		  'Delete notes?',
+		  'Are you sure you want to delete all the selected notes?',
+		  [
+		    {text: 'Yes, delete', onPress: () => this.deleteSelectedNotes(notesMap)},
+		    {
+		      text: 'Cancel',
+		      style: 'cancel',
+		    },
+		  ],
+		  {cancelable: false},
+		);
+	}
+
+	deleteSelectedNotes = async (notesMap) => {
+		for (const [key, value] of notesMap.entries()) {
+		  if (value) {
+				await deleteData(key, 'allNotes'); 
+			}
+		}
+
+		notesMap.clear();
+		this.cancelSelectMode();
+		this.updateNotes();
+	}
+
 	render() {
 		const {data, allTags, filtering, filteredNotes, searching, searchResults, loading} = this.state;
 
@@ -180,6 +247,8 @@ export default class Book extends React.Component {
 			  	{!searching &&
 				  	<SearchButton openSearchBar={this.openSearchBar}/>
 			  	}
+				</View>
+				<View style={styles.searchBar}>
 					<SearchBar
 					  ref={(ref) => this.searchBar = ref}
 					  data={data}
@@ -206,7 +275,7 @@ export default class Book extends React.Component {
 							data={dataDisplaying}
 							allTags={allTags}
 							openNote={this.openNote}
-							onDeleteRequest={this.onDeleteRequest}
+							selectingNotes={this.selectingNotes}
 						/>
 					}
 				</View>
@@ -230,6 +299,7 @@ const styles = StyleSheet.create({
 		color: '#363636',
 		fontSize: 16,
 		fontFamily: 'AvenirNext-Regular',
+		marginLeft: 10,
 	},
 	header: {
 		position: 'absolute',
@@ -241,6 +311,9 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		shadowOffset: {width: 8,height: 8},
     shadowOpacity: 0.1,
+	},
+	searchBar: {
+		alignItems: 'center',
 	},
 	noNoteText: {
 		color: 'grey',

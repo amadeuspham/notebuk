@@ -1,5 +1,6 @@
 import React from 'react';
 import {View, Text, StyleSheet, Dimensions, TouchableOpacity, Alert} from 'react-native';
+import { AntDesign } from '@expo/vector-icons';
 
 import getDateStrings from '../utils/TimeManipulator';
 import {deleteData} from '../utils/DataManager';
@@ -13,17 +14,39 @@ export default class NoteCard extends React.PureComponent {
 	}
 
 	render() {
-		const {openNote, note, tagColor, onDeleteRequest, note: {id, title, content, time}} = this.props;
+		const {
+			openNote, 
+			note, 
+			tagColor, 
+			selectNote, 
+			selectMode,
+			selected, 
+			note: {id, title, content, time},
+		} = this.props;
 		const {dateStr} = getDateStrings(time);
 
 		return (
 			<TouchableOpacity
 				style={styles.card} 
-				onPress={() => openNote(note, this.onDeleteRequest)}
-				onLongPress={() => onDeleteRequest(title, id)}
+				onPress={selectMode ? () => selectNote(id) : () => openNote(note, this.onDeleteRequest)}
+				onLongPress={() => selectNote(id)}
 			>
+				{selected &&
+					<AntDesign 
+						name='check' 
+						size={30} 
+						style={{ backgroundColor: '#568EA6', padding: 25, color: '#EFEEEE' }}
+					/>
+				}
 				<View style={styles.cardText}>
-					<View style={styles.noteHeader}>
+					<View 
+						style={[
+							styles.noteHeader, 
+							selected ? 
+							{width: Dimensions.get('window').width - 140} : 
+							{width: Dimensions.get('window').width - 60}
+						]}
+					>
 						<View style={{flexDirection: 'row', alignItems: 'center'}}>
 							{tagColor && <View style={[styles.tagDot, {backgroundColor: tagColor}]}/>}
 							<Text style={styles.titleText}>{title}</Text>
@@ -48,31 +71,21 @@ const styles = StyleSheet.create({
 		zIndex: 1,
 		height: 80,
 		width: Dimensions.get('window').width - 40,
-		borderColor: 'gainsboro',
-    borderWidth: StyleSheet.hairlineWidth,
     marginTop: 20,
     backgroundColor: 'white',
     shadowOffset: {width: 10,height: 10},
     shadowOpacity: 0.1,
     elevation: 5,
-    //overflow: 'visible',
-    //elevation: 8,
-	},
-	cardButton: {
-		height: 80,
-		width: 80,
-		borderColor: 'gainsboro',
-    borderWidth: StyleSheet.hairlineWidth,
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: 'row',
 	},
 	cardText: {
 		padding: 10,
 	},
 	noteHeader: {
-		height: 20,
+		width: Dimensions.get('window').width - 60,
 		marginBottom: 5,
 		flexDirection: 'row',
+		alignItems: 'center',
 		justifyContent: 'space-between',
 	},
 	tagDot: {
@@ -83,11 +96,12 @@ const styles = StyleSheet.create({
 	},
 	titleText: {
 		fontSize: 16,
-		color: 'black',
+		color: '#363636',
 		fontFamily: 'AvenirNext-DemiBold',
 	},
 	timeText: {
 		fontSize: 14,
+		color: '#363636',
 		fontFamily: 'AvenirNext-Regular',
 	},
 	snippet: {

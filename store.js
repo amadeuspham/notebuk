@@ -4,6 +4,8 @@ let state = {
   reminders: [],
   searching: false,
   currentRoute: 'Book',
+  allFontsLoaded: false,
+  selectNotesMode: false,
 };
 
 var listeners = [];

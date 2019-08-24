@@ -47,7 +47,7 @@ export default class Page extends React.Component {
 	      >
 	      	<Ionicons 
 						name='md-trash' 
-						size={30} 
+						size={25} 
 						style={{ marginRight: 20, color: '#363636' }}
 					/>
 	      </TouchableOpacity>
