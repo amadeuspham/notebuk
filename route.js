@@ -39,6 +39,9 @@ const RemindersStack = createStackNavigator(
 			headerTitleStyle: {
 	      fontFamily: 'AvenirNext-Regular',
 	      fontWeight: "400",
+	      textAlign: 'center',
+        flexGrow:1,
+        alignSelf:'center',
 	    },
 			headerTintColor: '#363636',
 		},
@@ -67,6 +70,9 @@ const BookStack = createStackNavigator(
 			headerTitleStyle: {
 	      fontFamily: 'AvenirNext-Regular',
 	      fontWeight: "400",
+	      textAlign: 'center',
+        flexGrow:1,
+        alignSelf:'center',
 	    },
 			headerTintColor: '#363636',
 		},
