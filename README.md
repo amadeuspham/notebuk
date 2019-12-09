@@ -71,7 +71,13 @@ yarn run ios
 
 Some screenshots of the application on iOS Simulator:
 
-![Notes list](https://github.com/vormium/notebuk/blob/master/screenshots/notes%20list.png?raw=true) ![Notes list](https://github.com/vormium/notebuk/blob/master/screenshots/notes%20list.png?raw=true)
+<p align="middle">
+  <img src="https://raw.githubusercontent.com/vormium/notebuk/master/screenshots/notes%20list.png" width="280" />
+  <img src="https://raw.githubusercontent.com/vormium/notebuk/master/screenshots/note.png" width="280" /> 
+  <img src="https://raw.githubusercontent.com/vormium/notebuk/master/screenshots/reminders%20list.png" width="280" />
+  <img src="https://raw.githubusercontent.com/vormium/notebuk/master/screenshots/reminder.png" width="280" />
+  <img src="https://raw.githubusercontent.com/vormium/notebuk/master/screenshots/tags.png" width="280" />
+</p>
 
 ### Debugging
 Anything written to the console should print in the terminal. 
