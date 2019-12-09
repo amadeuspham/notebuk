@@ -36,7 +36,7 @@ xcode-select --install
 ```
 
 #### Phone
-[`CRNA`](https://github.com/react-community/create-react-native-app)'s development environment uses a client app called `Expo Client` for live-reloading in development.
+This application uses a client app called `Expo Client` for viewing/live-reloading in development.
 
 Go to the App Store on your iOS or Andriod device, and install the Expo Client app ([iOS](https://itunes.apple.com/us/app/expo-client/id982107779), [Andriod](https://play.google.com/store/apps/details?id=host.exp.exponent)).
 
