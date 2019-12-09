@@ -9,7 +9,6 @@ A simple, cross-platform note-taking and reminder app created using React Native
   - [Network Configuration](#network-configuration)
   - [Running the Project](#running-the-project)
   - [Debugging](#debugging)
-- [Troubleshooting](#troubleshooting)
 
 ## Getting Started
 ```bash
