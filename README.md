@@ -60,7 +60,6 @@ To view the app on your phone:
 ```
 1. Open Expo Client on phone
 2. Scan QR code presented in terminal
-3. Code
 ```
 
 Alternatively, you can run the app in the Simulator on your macOS workstation, e.g:
